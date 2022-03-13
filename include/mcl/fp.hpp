@@ -6,6 +6,8 @@
 	@license modified new BSD license
 	http://opensource.org/licenses/BSD-3-Clause
 */
+#include <iostream>
+
 #ifndef CYBOZU_DONT_USE_STRING
 #include <iosfwd>
 #endif
@@ -295,7 +297,20 @@ public:
 		}
 		*pb = true;
 	}
-	template<class OutputStream>
+
+    template<class OutputStream>
+    void marshal(OutputStream& os) const
+    {
+        Unit v[4];
+        uint8_t *p = (uint8_t *)v;
+        op_.fromMont(v, v_);
+        // convert to big endian
+        for (int i = 31; i >= 0; i--) {
+            os << p[i];
+        }
+    }
+
+    template<class OutputStream>
 	void save(bool *pb, OutputStream& os, int ioMode) const
 	{
 		const size_t n = getByteSize();
